@@ -3,6 +3,7 @@ import {Produit} from "../model/produit.model";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {CategorieWrapper} from "../model/categorieWrapper.model";
+import {Categorie} from "../model/categorie.model";
 
 const httpOptions = {
   headers: new HttpHeaders({"Content-Type": "application/json"})
@@ -94,5 +95,9 @@ export class ProduitService {
   rechercherParNom(nom: string): Observable<Produit[]> {
     const url = `${this.apiUrl}/prodsByName/${nom}`;
     return this.http.get<Produit[]>(url);
+  }
+
+  ajouterCategorie(cat: Categorie): Observable<Categorie> {
+    return this.http.post<Categorie>(this.apiURLCat, cat, httpOptions);
   }
 }
