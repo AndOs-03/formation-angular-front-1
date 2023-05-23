@@ -4,6 +4,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {CategorieWrapper} from "../model/categorieWrapper.model";
 import {Categorie} from "../model/categorie.model";
+import {Image} from "../model/image.model";
 
 const httpOptions = {
   headers: new HttpHeaders({"Content-Type": "application/json"})
@@ -16,39 +17,13 @@ export class ProduitService {
 
   apiUrl: string = 'http://localhost:8080/produits/api';
   apiURLCat: string = 'http://localhost:8080/produits/cat';
-  produits: Produit[];
   produit?: Produit;
 
-  // categories: Categorie[];
-
-  constructor(private http: HttpClient) {
-    this.produits = [
-      {
-        idProduit: 1,
-        nomProduit: "PC Asus",
-        prixProduit: 3000.600,
-        dateCreation: new Date("01/14/2011"),
-        categorie: {idCat: 1, nomCat: "PC"}
-      },
-      {
-        idProduit: 2,
-        nomProduit: "Imprimante Epson",
-        prixProduit: 450,
-        dateCreation: new Date("12/17/2010"),
-        categorie: {idCat: 2, nomCat: "Imprimante"}
-      },
-      {
-        idProduit: 3,
-        nomProduit: "Tablette Samsung",
-        prixProduit: 900.123,
-        dateCreation: new Date("02/20/2020"),
-        categorie: {idCat: 1, nomCat: "PC"}
-      }
-    ];
-  }
+  constructor(private http: HttpClient) {}
 
   listeProduit(): Observable<Produit[]> {
-    return this.http.get<Produit[]>(this.apiUrl);
+    const url = `${this.apiUrl}/all`;
+    return this.http.get<Produit[]>(url);
   }
 
   ajouterProduit(prod: Produit): Observable<Produit> {
@@ -69,20 +44,6 @@ export class ProduitService {
     return this.http.put<Produit>(this.apiUrl, produit, httpOptions);
   }
 
-  trierProduits() {
-    this.produits = this.produits.sort((n1, n2) => {
-      // @ts-ignore
-      if (n1.idProduit > n2.idProduit) {
-        return 1;
-      }
-      // @ts-ignore
-      if (n1.idProduit < n2.idProduit) {
-        return -1;
-      }
-      return 0;
-    });
-  }
-
   listeCategories(): Observable<CategorieWrapper> {
     return this.http.get<CategorieWrapper>(this.apiURLCat);
   }
@@ -99,5 +60,17 @@ export class ProduitService {
 
   ajouterCategorie(cat: Categorie): Observable<Categorie> {
     return this.http.post<Categorie>(this.apiURLCat, cat, httpOptions);
+  }
+
+  uploadImage(file: File, filename: string): Observable<Image>{
+    const imageFormData = new FormData();
+    imageFormData.append('image', file, filename);
+    const url = `${this.apiUrl + '/image/upload'}`;
+    return this.http.post<Image>(url, imageFormData);
+  }
+
+  loadImage(id: number): Observable<Image> {
+    const url = `${this.apiUrl + '/image/get/info'}/${id}`;
+    return this.http.get<Image>(url);
   }
 }
